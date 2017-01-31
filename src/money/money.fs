@@ -30,23 +30,18 @@ type Money =
 | Value of Decimal*Currency
 | NaV of NaVError
     with
-        static member Parse(str) =
-            Value(33m, CAD)
         override this.ToString() =
             match this with
             | Value (amt, cur) ->
                 let formatStr = 
                     if amt = Decimal.Round(amt, cur.Decimals)
-                    then sprintf "%%.%df %%A" cur.Decimals
-                    else  "%M %A"
-                let twFormat = Printf.StringFormat<decimal->CurrencyCode->string>(formatStr)
-                sprintf twFormat amt cur.Code
+                    then sprintf "%%A %%.%df" cur.Decimals
+                    else  "%A %M"
+                let twFormat = Printf.StringFormat<Currency->decimal->string>(formatStr)
+                sprintf twFormat cur amt
             | NaV err -> sprintf "NaV %A" err
         member this.AsString = 
             this.ToString() 
-        member this.AddValue m =
-            Value(33m, CAD)
-
 
 let addValues m1 m2 = 
     match (m1, m2) with
@@ -92,6 +87,3 @@ let negate money =
         then money
         else Value(Decimal.Negate(amt), cur)
     | NaV err -> NaV err
-
-
-
