@@ -1,6 +1,10 @@
 module Money 
 open System
 
+
+let (><) x (min, max) =
+    (x > min) && (x < max)
+
 type CurrencyCode =
     | CAD
     | USD
@@ -20,7 +24,8 @@ type Currency = {
     MinorUnit : string
 }
 
-let maxValue = Decimal.MaxValue/1000000000001m
+//Not full decimal range to ensure there will always be at least 6 significant figures.
+let range = (0.000000001000000m, 50000000000000m)
 let CAD = {Code = CAD; Number = 444; Name = "Canadian Dollar"; Decimals = 2; MajorUnit = "Dollar"; MinorUnit = "cent"}
 let USD = {Code = USD; Number = 444; Name = "US Dollar"; Decimals = 2; MajorUnit = "Dollar"; MinorUnit = "cent"}
 let GBP = {Code = GBP; Number = 444; Name = "Pound Stirling"; Decimals = 2; MajorUnit = "Pound"; MinorUnit = "pence"}
@@ -47,7 +52,11 @@ let addValues m1 m2 =
     match (m1, m2) with
     | (NaV err, _) | (_, NaV err) -> NaV err
     | (Value(amt1, cur1), Value(amt2, cur2)) when cur1 = cur2 ->
-        try Value (amt1 + amt2, cur1)
+        try 
+            let tmp = amt1 + amt2
+            if abs tmp >< range
+            then Value (tmp, cur1)
+            else NaV Overflow
         with 
             | :? OverflowException as ex -> NaV Overflow
     | _ -> NaV MixedCurr
@@ -59,9 +68,9 @@ let multiplyBy money factor =
     | Value (amt, cur) -> 
         try 
             let tmp = amt*factor
-            if tmp > maxValue
-            then NaV Overflow
-            else Value (tmp, cur)
+            if abs tmp >< range
+            then Value (tmp, cur)
+            else NaV Overflow
         with 
             | :? OverflowException as ex -> NaV Overflow
     | NaV err -> money
@@ -73,7 +82,10 @@ let divideBy money divisor  =
         then NaV DivBy0
         else 
             try 
-                Value (amt/divisor , cur) 
+                let tmp = amt/divisor
+                if abs tmp >< range 
+                then Value (tmp , cur) 
+                else NaV Overflow
             with 
                 | :? OverflowException as ex -> NaV Overflow
     | NaV err -> money
