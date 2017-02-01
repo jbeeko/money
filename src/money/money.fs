@@ -20,7 +20,7 @@ type Currency = {
     MinorUnit : string
 }
 
-let maxValue = Decimal.MaxValue/1000000000000m
+let maxValue = Decimal.MaxValue/1000000000001m
 let CAD = {Code = CAD; Number = 444; Name = "Canadian Dollar"; Decimals = 2; MajorUnit = "Dollar"; MinorUnit = "cent"}
 let USD = {Code = USD; Number = 444; Name = "US Dollar"; Decimals = 2; MajorUnit = "Dollar"; MinorUnit = "cent"}
 let GBP = {Code = GBP; Number = 444; Name = "Pound Stirling"; Decimals = 2; MajorUnit = "Pound"; MinorUnit = "pence"}
