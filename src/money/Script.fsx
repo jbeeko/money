@@ -273,11 +273,16 @@ Rand,ZAR,710,2
 Zambian Kwacha,ZMW,967,2
 Zimbabwe Dollar,ZWL,932,2"
 
-let lines = Array.toSeq (data.Split [|'\n'|])
+let lines = Array.toSeq (data.Split [|'\n'|]) //|> Seq.filter (fun l -> Seq.length l > 1)
 
 let recs = seq {   
         for line in lines do 
         yield line.Split [|','|]}
+
+for r in recs do printfn "%i" (Array.length r)
+
+for r in recs do
+        printfn "let %s = {Code = %s; Number = %s; Name = %s; Decimals = %s}" r.[1] r.[1] r.[2] r.[0] r.[3]
 
 
 
