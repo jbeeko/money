@@ -281,7 +281,7 @@ let recs = seq {
 
 
 
-"Zimbabwe Dollar,ZWL,932,2"
-printfn "let %s = {Code = %s; Number = %i; Name = %s; Decimals = %id}"
+let r = "Zimbabwe Dollar,ZWL,932,2".Split [|','|]
+sprintf "let %s = {Code = %s; Number = %s; Name = %s; Decimals = %s}" r.[1] r.[1] r.[2] r.[0] r.[3]
 
 "Zimbabwe Dollar,ZWL,932,2"
