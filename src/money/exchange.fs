@@ -8,5 +8,6 @@ type ExchangeRate = {
     Spot : Decimal;
 }
 
-let exchange rate value
+let exchange rate value =
+    3
 
