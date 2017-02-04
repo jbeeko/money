@@ -1,34 +1,18 @@
-module Money 
+module Money
 open System
+open Currency
 
 
-let (><) x (min, max) =
-    (x > min) && (x < max)
 
-type CurrencyCode =
-    | CAD
-    | USD
-    | GBP
 type NaVError =
     | MixedCurr
     | DivBy0
     | Overflow
-
-[<StructuredFormatDisplay("{Code}")>]
-type Currency = {
-    Code : CurrencyCode;
-    Number : int 
-    Name : string
-    Decimals : int
-    MajorUnit : string
-    MinorUnit : string
-}
-
+    
 //Not full decimal range to ensure there will always be at least 6 significant figures.
 let range = (0.000000001000000m, 50000000000000m)
-let CAD = {Code = CAD; Number = 444; Name = "Canadian Dollar"; Decimals = 2; MajorUnit = "Dollar"; MinorUnit = "cent"}
-let USD = {Code = USD; Number = 444; Name = "US Dollar"; Decimals = 2; MajorUnit = "Dollar"; MinorUnit = "cent"}
-let GBP = {Code = GBP; Number = 444; Name = "Pound Stirling"; Decimals = 2; MajorUnit = "Pound"; MinorUnit = "pence"}
+let (><) x (min, max) =
+    (x > min) && (x < max)
 
 [<StructuredFormatDisplay("{AsString}")>]
 type Money =
@@ -39,8 +23,8 @@ type Money =
             match this with
             | Value (amt, cur) ->
                 let formatStr = 
-                    if amt = Decimal.Round(amt, cur.Decimals)
-                    then sprintf "%%A %%.%df" cur.Decimals
+                    if amt = Decimal.Round(amt, (currencyRec cur).Decimals)
+                    then sprintf "%%A %%.%df" (currencyRec cur).Decimals
                     else  "%A %M"
                 let twFormat = Printf.StringFormat<Currency->decimal->string>(formatStr)
                 sprintf twFormat cur amt

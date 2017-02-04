@@ -1,8 +1,8 @@
 module Tests
-
-open Expecto
-open Money
 open System
+open Expecto
+open Currency
+open Money
 
 
 type Payment = {
@@ -42,7 +42,15 @@ let errOver = NaV Overflow
 [<Tests>]
 let tests =
   testList "UnitTests" [
-    testCase "mixedCur" <| fun _ -> Expect.equal  (addValues v1 v2)  errMixed ""
-    testCase "div0" <| fun _ -> Expect.equal  (divideBy v1 0m)  errDiv0 ""
-    testCase "overflow" <| fun _ -> Expect.equal  (multiplyBy v1 Decimal.MaxValue)  errOver ""
+    testList "Values" [
+        testCase "mixedCur" <| fun _ -> Expect.equal  (addValues v1 v2)  errMixed ""
+        testCase "div0" <| fun _ -> Expect.equal  (divideBy v1 0m)  errDiv0 ""
+        testCase "overflow" <| fun _ -> Expect.equal  (multiplyBy v1 Decimal.MaxValue)  errOver ""
+    ]
+    testList "CodesValidation]" [
+        testCase "mixedCur" <| fun _ -> Expect.equal  (addValues v1 v2)  errMixed ""
+        testCase "div0" <| fun _ -> Expect.equal  (divideBy v1 0m)  errDiv0 ""
+        testCase "overflow" <| fun _ -> Expect.equal  (multiplyBy v1 Decimal.MaxValue)  errOver ""
+    ]
+
   ]
