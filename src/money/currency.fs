@@ -30,6 +30,7 @@ type Currency =
     | YER 
     | ZAR | ZMW | ZWL
    
+
 [<StructuredFormatDisplay("{Currency}")>]
 type CurrencyDetails = {
     Currency : Currency;
@@ -208,7 +209,4 @@ let Currencies =
         |> Map.ofList
 
 let currencyRec cur =
-    Currencies.Item cur
-
-let currencyCntry cur =
     Currencies.Item cur
