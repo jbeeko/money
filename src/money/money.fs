@@ -5,9 +5,14 @@ open Currency
 //Not full decimal range to ensure there will always be at least 6 significant figures.
 //Also needs to fit within SQL constraint of 38 digits decimal(32, 16) which allows for 16
 //places to right of decimal and 32-16 = 16 to left. 
+//
+//  |                        |
 //  500000000000000.000000000100000
-//          15             15
-//  NNNNNNNNNNNNNNN.DDDDDDDDDDDDDDD
+//  .net  15             15
+//  NNNNNNNNNNNNNNN.DDDDDDDDDXDDDDD
+//  SQL   16             16
+// NNNNNNNNNNNNNNNN.DDDDDDDDDDDDDDDD
+
 let (><) x (min, max) =
     (x > min) && (x < max)
 
