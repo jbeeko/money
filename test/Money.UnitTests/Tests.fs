@@ -38,19 +38,25 @@ let v2 = Value(10m, USD)
 let errMixed = NaV MixedCurr
 let errDiv0 = NaV DivBy0
 let errOver = NaV Overflow
+let minVal, maxVal = ValueRange
 
 [<Tests>]
 let tests =
   testList "UnitTests" [
     testList "Values" [
+        testCase "add" <| fun _ -> Expect.equal  (addValues v2 v2)  (Value(20m, USD)) ""
+        testCase "add with .+." <| fun _ -> Expect.equal  (v2 .+. v2)  (Value(20m, USD)) ""
         testCase "mixedCur" <| fun _ -> Expect.equal  (addValues v1 v2)  errMixed ""
         testCase "div0" <| fun _ -> Expect.equal  (divideBy v1 0m)  errDiv0 ""
-        testCase "overflow" <| fun _ -> Expect.equal  (multiplyBy v1 Decimal.MaxValue)  errOver ""
+        testCase "underflow" <| fun _ -> Expect.equal  (Value(-0.000000000000001m, CAD) .+. Value(minVal, CAD))  errOver ""
+        testCase "overflow" <| fun _ -> Expect.equal  (Value(0.000000000000001m, CAD) .+. Value(maxVal, CAD))  errOver ""
+        testCase "overflow" <| fun _ -> Expect.notEqual  (Value(0.0m, CAD) .+. Value(0.0m, CAD))  errOver ""
+
     ]
     testList "CodesValidation]" [
         testCase "mixedCur" <| fun _ -> Expect.equal  (addValues v1 v2)  errMixed ""
         testCase "div0" <| fun _ -> Expect.equal  (divideBy v1 0m)  errDiv0 ""
         testCase "overflow" <| fun _ -> Expect.equal  (multiplyBy v1 Decimal.MaxValue)  errOver ""
     ]
-
   ]
+
