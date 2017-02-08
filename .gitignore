@@ -1,7 +1,7 @@
 # Created by https://www.gitignore.io/api/f#,linux,windows,macos,vim,emacs,visualstudio,visualstudiocode
 
 ### Project Specific ###
-*scripting.fsx
+scripting.fsx
 
 ### F# ###
 lib/debug
