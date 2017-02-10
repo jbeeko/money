@@ -29,8 +29,14 @@ type Currency =
     | XAF | XCD | XOF | XPF | XTS | XXX
     | YER 
     | ZAR | ZMW | ZWL
-   
 
+    member this.Decimals =
+        match this with
+        | BIF | CLP | DJF | GNF | ISK | JPY | KMF | KRW | PYG | RWF | UGX | VND | VUV | XAF | XOF | XPF -> 0
+        | BHD | IQD | JOD | KWD | LYD | OMR | TND -> 3
+        | CLF -> 4
+        | _ -> 2
+   
 [<StructuredFormatDisplay("{Currency}")>]
 type CurrencyDetails = {
     Currency : Currency;
@@ -199,8 +205,8 @@ let Currencies =
     {Currency = XCD; Number = 951; Name = "East Caribbean Dollar"; Decimals = 2};
     {Currency = XOF; Number = 952; Name = "CFA Franc BCEAO"; Decimals = 0};
     {Currency = XPF; Number = 953; Name = "CFP Franc"; Decimals = 0};
-    {Currency = XTS; Number = 886; Name = "Testing"; Decimals = 963};
-    {Currency = XXX; Number = 886; Name = "No Currency Specified"; Decimals = 999};
+    {Currency = XTS; Number = 963; Name = "Testing"; Decimals = 2};
+    {Currency = XXX; Number = 999; Name = "No Currency Specified"; Decimals = 2};
     {Currency = YER; Number = 886; Name = "Yemeni Rial"; Decimals = 2};
     {Currency = ZAR; Number = 710; Name = "Rand"; Decimals = 2};
     {Currency = ZMW; Number = 967; Name = "Zambian Kwacha"; Decimals = 2};

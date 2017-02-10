@@ -28,24 +28,36 @@ type NaVError =
 [<StructuredFormatDisplay("{AsString}")>]
 type Money =
 | Value of Decimal*Currency
+| Zero
 | NaV of NaVError
-    with
-        override this.ToString() =
-            match this with
-            | Value (amt, cur) ->
-                let formatStr = 
-                    if amt = Decimal.Round(amt, (currencyRec cur).Decimals)
-                    then sprintf "%%A %%.%df" (currencyRec cur).Decimals
-                    else  "%A %M"
-                let twFormat = Printf.StringFormat<Currency->decimal->string>(formatStr)
-                sprintf twFormat cur amt
-            | NaV err -> sprintf "NaV %A" err
-        member this.AsString = 
-            this.ToString() 
+    override this.ToString() =
+        match this with
+        | Value (amt, cur) ->
+            let formatStr = 
+                if amt = Decimal.Round(amt, cur.Decimals)
+                then sprintf "%%A %%.%df" cur.Decimals
+                else  "%A %M"
+            let twFormat = Printf.StringFormat<Currency->decimal->string>(formatStr)
+            sprintf twFormat cur amt
+        | Zero -> "XXX 0.00"
+        | NaV err -> sprintf "NaV %A" err
+    member this.AsString = 
+        this.ToString() 
+
+let negate m =
+    match m with
+    | Value (amt, cur) -> 
+        if amt = 0m
+        then m
+        else Value(Decimal.Negate(amt), cur)
+    | Zero -> m
+    | NaV err -> m
 
 let addValues m1 m2 = 
     match (m1, m2) with
     | (NaV err, _) | (_, NaV err) -> NaV err
+    | (Zero, _) -> m2
+    | (_, Zero) -> m1
     | (Value(amt1, cur1), Value(amt2, cur2)) when cur1 = cur2 ->
         try 
             let tmp = amt1 + amt2
@@ -56,10 +68,13 @@ let addValues m1 m2 =
             | :? OverflowException as ex -> NaV Overflow
     | _ -> NaV MixedCurr
 
+let subtractValues v1 v2 =
+    addValues v1 (negate v2)
+
 let (.+.) = addValues
 
-let multiplyBy money factor =
-    match money with
+let multiplyBy m factor =
+    match m with
     | Value (amt, cur) -> 
         try 
             let tmp = amt*factor
@@ -68,29 +83,12 @@ let multiplyBy money factor =
             else NaV Overflow
         with 
             | :? OverflowException as ex -> NaV Overflow
-    | NaV err -> money
+    | _ -> m
 
-let divideBy money divisor  =
-    match money with
-    | Value (amt, cur) -> 
-        if divisor  = 0m
-        then NaV DivBy0
-        else 
-            try 
-                let tmp = amt/divisor
-                if inRange tmp
-                then Value (tmp , cur) 
-                else NaV Overflow
-            with 
-                | :? OverflowException as ex -> NaV Overflow
-    | NaV err -> money
+let divideBy m divisor = 
+    if divisor = 0m
+    then NaV DivBy0
+    else multiplyBy m (1m/divisor)
 
 let (.*.) = multiplyBy
 
-let negate money =
-    match money with
-    | Value (amt, cur) -> 
-        if amt = 0m
-        then money
-        else Value(Decimal.Negate(amt), cur)
-    | NaV err -> NaV err
